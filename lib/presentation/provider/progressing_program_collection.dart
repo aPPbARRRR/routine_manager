@@ -9,6 +9,7 @@ import 'package:routine_manager/presentation/constant/window_size.dart';
 import 'package:routine_manager/presentation/widget/write_text_dialog.dart';
 import 'package:routine_manager/service/app_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../model/session.dart';
 
@@ -19,6 +20,12 @@ part 'progressing_program_collection.g.dart';
 // 현재 타이머 실행 방식때문에 기존 program과 동일해야하는 program이 다른 instance로 생성됨.
 // program의 extension으로 메소드들을 구현해놓은 설계와 배치되는 방식임.
 // 개선할 것.
+
+// # todo
+// 프로그램 종료 시 프로그램 히스토리 저장 로직 추가
+
+// # todo
+// 프로그램 진행중일 때 화면켜짐 유지되도록 구현 -> 구현완료
 
 @Riverpod(keepAlive: true)
 class ProgressingProgramCollection extends _$ProgressingProgramCollection {
@@ -39,6 +46,8 @@ class ProgressingProgramCollection extends _$ProgressingProgramCollection {
     if (state.where((p) => p.programUid == program.programUid).isNotEmpty) {
       return;
     }
+
+    WakelockPlus.enable();
 
     final programWithHistory = program.copyWith(
       programHistoryUid: const Uuid().v4(),
@@ -119,6 +128,7 @@ class ProgressingProgramCollection extends _$ProgressingProgramCollection {
     _programRunners[program.programUid]?.cancel();
     _selectedSessions.remove(program.programUid);
     state = [...state.where((p) => p.programUid != program.programUid)];
+    WakelockPlus.disable();
   }
 
   void updateSessionMemo(Session session, String memo) {
