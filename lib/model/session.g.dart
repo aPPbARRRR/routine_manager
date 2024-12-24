@@ -12,7 +12,7 @@ _$SessionImpl _$$SessionImplFromJson(Map<String, dynamic> json) =>
       sessionUid: json['sessionUid'] as String,
       progressedSessionTimeInSeconds:
           (json['progressedSessionTimeInSeconds'] as num).toInt(),
-      sessionRemainingTime: (json['sessionRemainingTime'] as num).toInt(),
+      sessionTimeInSeconds: (json['sessionTimeInSeconds'] as num).toInt(),
       sessionPriority: (json['sessionPriority'] as num).toInt(),
       sessionMemo: json['sessionMemo'] as String,
     );
@@ -22,7 +22,7 @@ Map<String, dynamic> _$$SessionImplToJson(_$SessionImpl instance) =>
       'sessionTitle': instance.sessionTitle,
       'sessionUid': instance.sessionUid,
       'progressedSessionTimeInSeconds': instance.progressedSessionTimeInSeconds,
-      'sessionRemainingTime': instance.sessionRemainingTime,
+      'sessionTimeInSeconds': instance.sessionTimeInSeconds,
       'sessionPriority': instance.sessionPriority,
       'sessionMemo': instance.sessionMemo,
     };

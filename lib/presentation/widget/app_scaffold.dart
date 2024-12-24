@@ -2,6 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
+import '../constant/window_size.dart';
+import 'always_on_icon_button.dart';
+
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
@@ -17,6 +20,7 @@ class AppScaffold extends StatelessWidget {
     this.bottomNavigationBar,
     this.appBar,
     this.leading,
+    this.isSideScreen = false,
   });
 
   final bool isSafeToTitleBar;
@@ -31,6 +35,7 @@ class AppScaffold extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final AppBar? appBar;
   final Widget? leading;
+  final bool isSideScreen;
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +47,45 @@ class AppScaffold extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: 30,
+              height: WindowSize.titleBarHeight,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: switch (Platform.operatingSystem) {
                   'windows' => MainAxisAlignment.start,
                   'macos' => MainAxisAlignment.end,
                   _ => MainAxisAlignment.center,
                 },
-                children: titleBarActions ?? [],
+                children: [
+                  if (titleBarActions != null && titleBarActions!.isNotEmpty)
+                    ...titleBarActions!,
+                  if (!isSideScreen) const AlwaysOnIconButton(),
+                  if (!isSideScreen)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: StreamBuilder(
+                        stream: Stream.periodic(const Duration(seconds: 1)),
+                        builder: (context, snapshot) {
+                          final now = DateTime.now();
+                          final period = now.hour < 12 ? '오전' : '오후';
+                          final hour =
+                              now.hour <= 12 ? now.hour : now.hour - 12;
+                          return Text(
+                            '$period ${hour.toString().padLeft(2, '0')}'
+                            ':${now.minute.toString().padLeft(2, '0')}'
+                            // ':${now.second.toString().padLeft(2, '0')}'
+                            ,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                ],
               ),
             ),
-            body,
+            Expanded(child: body),
           ],
         ),
         backgroundColor: backgroundColor,

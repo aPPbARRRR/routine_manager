@@ -9,7 +9,7 @@ class Session with _$Session {
     required String sessionTitle,
     required String sessionUid,
     required int progressedSessionTimeInSeconds,
-    required int sessionRemainingTime,
+    required int sessionTimeInSeconds,
     required int sessionPriority,
     required String sessionMemo,
   }) = _Session;

@@ -23,7 +23,7 @@ mixin _$Session {
   String get sessionTitle => throw _privateConstructorUsedError;
   String get sessionUid => throw _privateConstructorUsedError;
   int get progressedSessionTimeInSeconds => throw _privateConstructorUsedError;
-  int get sessionRemainingTime => throw _privateConstructorUsedError;
+  int get sessionTimeInSeconds => throw _privateConstructorUsedError;
   int get sessionPriority => throw _privateConstructorUsedError;
   String get sessionMemo => throw _privateConstructorUsedError;
 
@@ -41,7 +41,7 @@ abstract class $SessionCopyWith<$Res> {
       {String sessionTitle,
       String sessionUid,
       int progressedSessionTimeInSeconds,
-      int sessionRemainingTime,
+      int sessionTimeInSeconds,
       int sessionPriority,
       String sessionMemo});
 }
@@ -62,7 +62,7 @@ class _$SessionCopyWithImpl<$Res, $Val extends Session>
     Object? sessionTitle = null,
     Object? sessionUid = null,
     Object? progressedSessionTimeInSeconds = null,
-    Object? sessionRemainingTime = null,
+    Object? sessionTimeInSeconds = null,
     Object? sessionPriority = null,
     Object? sessionMemo = null,
   }) {
@@ -79,9 +79,9 @@ class _$SessionCopyWithImpl<$Res, $Val extends Session>
           ? _value.progressedSessionTimeInSeconds
           : progressedSessionTimeInSeconds // ignore: cast_nullable_to_non_nullable
               as int,
-      sessionRemainingTime: null == sessionRemainingTime
-          ? _value.sessionRemainingTime
-          : sessionRemainingTime // ignore: cast_nullable_to_non_nullable
+      sessionTimeInSeconds: null == sessionTimeInSeconds
+          ? _value.sessionTimeInSeconds
+          : sessionTimeInSeconds // ignore: cast_nullable_to_non_nullable
               as int,
       sessionPriority: null == sessionPriority
           ? _value.sessionPriority
@@ -106,7 +106,7 @@ abstract class _$$SessionImplCopyWith<$Res> implements $SessionCopyWith<$Res> {
       {String sessionTitle,
       String sessionUid,
       int progressedSessionTimeInSeconds,
-      int sessionRemainingTime,
+      int sessionTimeInSeconds,
       int sessionPriority,
       String sessionMemo});
 }
@@ -125,7 +125,7 @@ class __$$SessionImplCopyWithImpl<$Res>
     Object? sessionTitle = null,
     Object? sessionUid = null,
     Object? progressedSessionTimeInSeconds = null,
-    Object? sessionRemainingTime = null,
+    Object? sessionTimeInSeconds = null,
     Object? sessionPriority = null,
     Object? sessionMemo = null,
   }) {
@@ -142,9 +142,9 @@ class __$$SessionImplCopyWithImpl<$Res>
           ? _value.progressedSessionTimeInSeconds
           : progressedSessionTimeInSeconds // ignore: cast_nullable_to_non_nullable
               as int,
-      sessionRemainingTime: null == sessionRemainingTime
-          ? _value.sessionRemainingTime
-          : sessionRemainingTime // ignore: cast_nullable_to_non_nullable
+      sessionTimeInSeconds: null == sessionTimeInSeconds
+          ? _value.sessionTimeInSeconds
+          : sessionTimeInSeconds // ignore: cast_nullable_to_non_nullable
               as int,
       sessionPriority: null == sessionPriority
           ? _value.sessionPriority
@@ -165,7 +165,7 @@ class _$SessionImpl implements _Session {
       {required this.sessionTitle,
       required this.sessionUid,
       required this.progressedSessionTimeInSeconds,
-      required this.sessionRemainingTime,
+      required this.sessionTimeInSeconds,
       required this.sessionPriority,
       required this.sessionMemo});
 
@@ -179,7 +179,7 @@ class _$SessionImpl implements _Session {
   @override
   final int progressedSessionTimeInSeconds;
   @override
-  final int sessionRemainingTime;
+  final int sessionTimeInSeconds;
   @override
   final int sessionPriority;
   @override
@@ -187,7 +187,7 @@ class _$SessionImpl implements _Session {
 
   @override
   String toString() {
-    return 'Session(sessionTitle: $sessionTitle, sessionUid: $sessionUid, progressedSessionTimeInSeconds: $progressedSessionTimeInSeconds, sessionRemainingTime: $sessionRemainingTime, sessionPriority: $sessionPriority, sessionMemo: $sessionMemo)';
+    return 'Session(sessionTitle: $sessionTitle, sessionUid: $sessionUid, progressedSessionTimeInSeconds: $progressedSessionTimeInSeconds, sessionTimeInSeconds: $sessionTimeInSeconds, sessionPriority: $sessionPriority, sessionMemo: $sessionMemo)';
   }
 
   @override
@@ -203,8 +203,8 @@ class _$SessionImpl implements _Session {
                     progressedSessionTimeInSeconds) ||
                 other.progressedSessionTimeInSeconds ==
                     progressedSessionTimeInSeconds) &&
-            (identical(other.sessionRemainingTime, sessionRemainingTime) ||
-                other.sessionRemainingTime == sessionRemainingTime) &&
+            (identical(other.sessionTimeInSeconds, sessionTimeInSeconds) ||
+                other.sessionTimeInSeconds == sessionTimeInSeconds) &&
             (identical(other.sessionPriority, sessionPriority) ||
                 other.sessionPriority == sessionPriority) &&
             (identical(other.sessionMemo, sessionMemo) ||
@@ -218,7 +218,7 @@ class _$SessionImpl implements _Session {
       sessionTitle,
       sessionUid,
       progressedSessionTimeInSeconds,
-      sessionRemainingTime,
+      sessionTimeInSeconds,
       sessionPriority,
       sessionMemo);
 
@@ -241,7 +241,7 @@ abstract class _Session implements Session {
       {required final String sessionTitle,
       required final String sessionUid,
       required final int progressedSessionTimeInSeconds,
-      required final int sessionRemainingTime,
+      required final int sessionTimeInSeconds,
       required final int sessionPriority,
       required final String sessionMemo}) = _$SessionImpl;
 
@@ -254,7 +254,7 @@ abstract class _Session implements Session {
   @override
   int get progressedSessionTimeInSeconds;
   @override
-  int get sessionRemainingTime;
+  int get sessionTimeInSeconds;
   @override
   int get sessionPriority;
   @override

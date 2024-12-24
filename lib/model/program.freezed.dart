@@ -22,11 +22,13 @@ Program _$ProgramFromJson(Map<String, dynamic> json) {
 mixin _$Program {
   String get programTitle => throw _privateConstructorUsedError;
   String get programUid => throw _privateConstructorUsedError;
-  String get programDescription => throw _privateConstructorUsedError;
-  int get startedHour => throw _privateConstructorUsedError;
-  int get startedMinute => throw _privateConstructorUsedError;
+  String get programDescription =>
+      throw _privateConstructorUsedError; // 프로그램 시작시 입력
+  DateTime? get startedAt => throw _privateConstructorUsedError;
   int get programTimeInSeconds => throw _privateConstructorUsedError;
+  int get progressedProgramTimeInSeconds => throw _privateConstructorUsedError;
   List<Session> get programSessions => throw _privateConstructorUsedError;
+  String? get programHistoryUid => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -42,10 +44,11 @@ abstract class $ProgramCopyWith<$Res> {
       {String programTitle,
       String programUid,
       String programDescription,
-      int startedHour,
-      int startedMinute,
+      DateTime? startedAt,
       int programTimeInSeconds,
-      List<Session> programSessions});
+      int progressedProgramTimeInSeconds,
+      List<Session> programSessions,
+      String? programHistoryUid});
 }
 
 /// @nodoc
@@ -64,10 +67,11 @@ class _$ProgramCopyWithImpl<$Res, $Val extends Program>
     Object? programTitle = null,
     Object? programUid = null,
     Object? programDescription = null,
-    Object? startedHour = null,
-    Object? startedMinute = null,
+    Object? startedAt = freezed,
     Object? programTimeInSeconds = null,
+    Object? progressedProgramTimeInSeconds = null,
     Object? programSessions = null,
+    Object? programHistoryUid = freezed,
   }) {
     return _then(_value.copyWith(
       programTitle: null == programTitle
@@ -82,22 +86,26 @@ class _$ProgramCopyWithImpl<$Res, $Val extends Program>
           ? _value.programDescription
           : programDescription // ignore: cast_nullable_to_non_nullable
               as String,
-      startedHour: null == startedHour
-          ? _value.startedHour
-          : startedHour // ignore: cast_nullable_to_non_nullable
-              as int,
-      startedMinute: null == startedMinute
-          ? _value.startedMinute
-          : startedMinute // ignore: cast_nullable_to_non_nullable
-              as int,
+      startedAt: freezed == startedAt
+          ? _value.startedAt
+          : startedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       programTimeInSeconds: null == programTimeInSeconds
           ? _value.programTimeInSeconds
           : programTimeInSeconds // ignore: cast_nullable_to_non_nullable
+              as int,
+      progressedProgramTimeInSeconds: null == progressedProgramTimeInSeconds
+          ? _value.progressedProgramTimeInSeconds
+          : progressedProgramTimeInSeconds // ignore: cast_nullable_to_non_nullable
               as int,
       programSessions: null == programSessions
           ? _value.programSessions
           : programSessions // ignore: cast_nullable_to_non_nullable
               as List<Session>,
+      programHistoryUid: freezed == programHistoryUid
+          ? _value.programHistoryUid
+          : programHistoryUid // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -113,10 +121,11 @@ abstract class _$$ProgramImplCopyWith<$Res> implements $ProgramCopyWith<$Res> {
       {String programTitle,
       String programUid,
       String programDescription,
-      int startedHour,
-      int startedMinute,
+      DateTime? startedAt,
       int programTimeInSeconds,
-      List<Session> programSessions});
+      int progressedProgramTimeInSeconds,
+      List<Session> programSessions,
+      String? programHistoryUid});
 }
 
 /// @nodoc
@@ -133,10 +142,11 @@ class __$$ProgramImplCopyWithImpl<$Res>
     Object? programTitle = null,
     Object? programUid = null,
     Object? programDescription = null,
-    Object? startedHour = null,
-    Object? startedMinute = null,
+    Object? startedAt = freezed,
     Object? programTimeInSeconds = null,
+    Object? progressedProgramTimeInSeconds = null,
     Object? programSessions = null,
+    Object? programHistoryUid = freezed,
   }) {
     return _then(_$ProgramImpl(
       programTitle: null == programTitle
@@ -151,22 +161,26 @@ class __$$ProgramImplCopyWithImpl<$Res>
           ? _value.programDescription
           : programDescription // ignore: cast_nullable_to_non_nullable
               as String,
-      startedHour: null == startedHour
-          ? _value.startedHour
-          : startedHour // ignore: cast_nullable_to_non_nullable
-              as int,
-      startedMinute: null == startedMinute
-          ? _value.startedMinute
-          : startedMinute // ignore: cast_nullable_to_non_nullable
-              as int,
+      startedAt: freezed == startedAt
+          ? _value.startedAt
+          : startedAt // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
       programTimeInSeconds: null == programTimeInSeconds
           ? _value.programTimeInSeconds
           : programTimeInSeconds // ignore: cast_nullable_to_non_nullable
+              as int,
+      progressedProgramTimeInSeconds: null == progressedProgramTimeInSeconds
+          ? _value.progressedProgramTimeInSeconds
+          : progressedProgramTimeInSeconds // ignore: cast_nullable_to_non_nullable
               as int,
       programSessions: null == programSessions
           ? _value._programSessions
           : programSessions // ignore: cast_nullable_to_non_nullable
               as List<Session>,
+      programHistoryUid: freezed == programHistoryUid
+          ? _value.programHistoryUid
+          : programHistoryUid // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -178,10 +192,11 @@ class _$ProgramImpl implements _Program {
       {required this.programTitle,
       required this.programUid,
       required this.programDescription,
-      required this.startedHour,
-      required this.startedMinute,
+      this.startedAt = null,
       required this.programTimeInSeconds,
-      required final List<Session> programSessions})
+      required this.progressedProgramTimeInSeconds,
+      required final List<Session> programSessions,
+      this.programHistoryUid = null})
       : _programSessions = programSessions;
 
   factory _$ProgramImpl.fromJson(Map<String, dynamic> json) =>
@@ -193,12 +208,14 @@ class _$ProgramImpl implements _Program {
   final String programUid;
   @override
   final String programDescription;
+// 프로그램 시작시 입력
   @override
-  final int startedHour;
-  @override
-  final int startedMinute;
+  @JsonKey()
+  final DateTime? startedAt;
   @override
   final int programTimeInSeconds;
+  @override
+  final int progressedProgramTimeInSeconds;
   final List<Session> _programSessions;
   @override
   List<Session> get programSessions {
@@ -208,8 +225,12 @@ class _$ProgramImpl implements _Program {
   }
 
   @override
+  @JsonKey()
+  final String? programHistoryUid;
+
+  @override
   String toString() {
-    return 'Program(programTitle: $programTitle, programUid: $programUid, programDescription: $programDescription, startedHour: $startedHour, startedMinute: $startedMinute, programTimeInSeconds: $programTimeInSeconds, programSessions: $programSessions)';
+    return 'Program(programTitle: $programTitle, programUid: $programUid, programDescription: $programDescription, startedAt: $startedAt, programTimeInSeconds: $programTimeInSeconds, progressedProgramTimeInSeconds: $progressedProgramTimeInSeconds, programSessions: $programSessions, programHistoryUid: $programHistoryUid)';
   }
 
   @override
@@ -223,14 +244,18 @@ class _$ProgramImpl implements _Program {
                 other.programUid == programUid) &&
             (identical(other.programDescription, programDescription) ||
                 other.programDescription == programDescription) &&
-            (identical(other.startedHour, startedHour) ||
-                other.startedHour == startedHour) &&
-            (identical(other.startedMinute, startedMinute) ||
-                other.startedMinute == startedMinute) &&
+            (identical(other.startedAt, startedAt) ||
+                other.startedAt == startedAt) &&
             (identical(other.programTimeInSeconds, programTimeInSeconds) ||
                 other.programTimeInSeconds == programTimeInSeconds) &&
+            (identical(other.progressedProgramTimeInSeconds,
+                    progressedProgramTimeInSeconds) ||
+                other.progressedProgramTimeInSeconds ==
+                    progressedProgramTimeInSeconds) &&
             const DeepCollectionEquality()
-                .equals(other._programSessions, _programSessions));
+                .equals(other._programSessions, _programSessions) &&
+            (identical(other.programHistoryUid, programHistoryUid) ||
+                other.programHistoryUid == programHistoryUid));
   }
 
   @JsonKey(ignore: true)
@@ -240,10 +265,11 @@ class _$ProgramImpl implements _Program {
       programTitle,
       programUid,
       programDescription,
-      startedHour,
-      startedMinute,
+      startedAt,
       programTimeInSeconds,
-      const DeepCollectionEquality().hash(_programSessions));
+      progressedProgramTimeInSeconds,
+      const DeepCollectionEquality().hash(_programSessions),
+      programHistoryUid);
 
   @JsonKey(ignore: true)
   @override
@@ -264,10 +290,11 @@ abstract class _Program implements Program {
       {required final String programTitle,
       required final String programUid,
       required final String programDescription,
-      required final int startedHour,
-      required final int startedMinute,
+      final DateTime? startedAt,
       required final int programTimeInSeconds,
-      required final List<Session> programSessions}) = _$ProgramImpl;
+      required final int progressedProgramTimeInSeconds,
+      required final List<Session> programSessions,
+      final String? programHistoryUid}) = _$ProgramImpl;
 
   factory _Program.fromJson(Map<String, dynamic> json) = _$ProgramImpl.fromJson;
 
@@ -277,14 +304,16 @@ abstract class _Program implements Program {
   String get programUid;
   @override
   String get programDescription;
-  @override
-  int get startedHour;
-  @override
-  int get startedMinute;
+  @override // 프로그램 시작시 입력
+  DateTime? get startedAt;
   @override
   int get programTimeInSeconds;
   @override
+  int get progressedProgramTimeInSeconds;
+  @override
   List<Session> get programSessions;
+  @override
+  String? get programHistoryUid;
   @override
   @JsonKey(ignore: true)
   _$$ProgramImplCopyWith<_$ProgramImpl> get copyWith =>

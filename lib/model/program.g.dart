@@ -11,12 +11,16 @@ _$ProgramImpl _$$ProgramImplFromJson(Map<String, dynamic> json) =>
       programTitle: json['programTitle'] as String,
       programUid: json['programUid'] as String,
       programDescription: json['programDescription'] as String,
-      startedHour: (json['startedHour'] as num).toInt(),
-      startedMinute: (json['startedMinute'] as num).toInt(),
+      startedAt: json['startedAt'] == null
+          ? null
+          : DateTime.parse(json['startedAt'] as String),
       programTimeInSeconds: (json['programTimeInSeconds'] as num).toInt(),
+      progressedProgramTimeInSeconds:
+          (json['progressedProgramTimeInSeconds'] as num).toInt(),
       programSessions: (json['programSessions'] as List<dynamic>)
           .map((e) => Session.fromJson(e as Map<String, dynamic>))
           .toList(),
+      programHistoryUid: json['programHistoryUid'] as String? ?? null,
     );
 
 Map<String, dynamic> _$$ProgramImplToJson(_$ProgramImpl instance) =>
@@ -24,8 +28,9 @@ Map<String, dynamic> _$$ProgramImplToJson(_$ProgramImpl instance) =>
       'programTitle': instance.programTitle,
       'programUid': instance.programUid,
       'programDescription': instance.programDescription,
-      'startedHour': instance.startedHour,
-      'startedMinute': instance.startedMinute,
+      'startedAt': instance.startedAt?.toIso8601String(),
       'programTimeInSeconds': instance.programTimeInSeconds,
+      'progressedProgramTimeInSeconds': instance.progressedProgramTimeInSeconds,
       'programSessions': instance.programSessions,
+      'programHistoryUid': instance.programHistoryUid,
     };

@@ -5,16 +5,21 @@ import 'package:gap/gap.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:routine_manager/model/program.dart';
 import 'package:routine_manager/model/session.dart';
+import 'package:routine_manager/model/session_extension.dart';
 import 'package:routine_manager/presentation/layout/default_layout.dart';
 import 'package:routine_manager/presentation/provider/fetched_programs.dart';
 import 'package:routine_manager/presentation/widget/app_text_button.dart';
+import 'package:routine_manager/presentation/widget/go_program_collection_screen_icon_button.dart';
 import 'package:routine_manager/presentation/widget/progress_time_brief_bar.dart';
 import 'package:routine_manager/service/app_service.dart';
 import 'package:uuid/uuid.dart';
 import 'package:window_manager/window_manager.dart';
 import '../constant/app_color.dart';
-import '../widget/app_scaffold.dart';
+import '../constant/window_size.dart';
 import '../widget/app_textfield.dart';
+import '../widget/progress_brief_badge.dart';
+import '../widget/write_text_dialog.dart';
+import 'program_collection_screen.dart';
 
 class CreateProgramScreen extends ConsumerStatefulWidget {
   const CreateProgramScreen({super.key});
@@ -27,29 +32,27 @@ class CreateProgramScreen extends ConsumerStatefulWidget {
 class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
   final TextEditingController _programNameController = TextEditingController();
   final TextEditingController _programHourController = TextEditingController();
-  final TextEditingController _programMinuteController =
-      TextEditingController();
   final TextEditingController _sessionNameController = TextEditingController();
   final TextEditingController _sessionHourController = TextEditingController();
   final TextEditingController _sessionMinuteController =
       TextEditingController();
 
   final List<Session> _sessions = [];
-  Size _windowSize = Size(435, 300);
-  // Size _sessionWindowSize = Size(435, 300);
-
-  // bool _isOpenSideScreen = false;
+  // Size _windowSize = Size(435, 300);
   bool _isMouseOveringOnAddSessionButton = false;
+  bool _isFormValid = false;
 
   String? _errorText;
-  Duration _remainingProgramTime = Duration(hours: 24);
+  int _programTimeInSeconds = 0;
+  late int _notAssignedProgramTimeInSeconds = _programTimeInSeconds -
+      _sessions.fold(0, (acc, session) => acc + session.sessionTimeInSeconds);
   String _programDescription = '';
 
-  @override
-  void initState() {
-    super.initState();
-    windowManager.setSize(_windowSize); // 하단 15
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WindowSize.updateWindowSize(); // 하단 15
+  // }
 
   @override
   void dispose() {
@@ -62,191 +65,202 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: _windowSize.width,
-          height: _windowSize.height,
-          child: DefaultLayout(
-            titleBarActions: const [],
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ProgressTimeBriefBar(
-                  program: Program(
-                      programTitle: _programNameController.text,
-                      programUid: const Uuid().v4(),
-                      programDescription: '',
-                      startedHour:
-                          int.tryParse(_programHourController.text) ?? 0,
-                      startedMinute:
-                          int.tryParse(_programMinuteController.text) ?? 0,
-                      programTimeInSeconds: _remainingProgramTime.inSeconds,
-                      programSessions: _sessions),
-                ),
+    return SizedBox(
+      width: WindowSize.currentSize.width,
+      height: WindowSize.currentSize.height,
+      child: DefaultLayout(
+        titleBarActions: const [
+          ProgressBriefBadge(),
+          GoProgramCollectionScreenIconButton()
+        ],
+        body: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_programTimeInSeconds > 0 &&
+                _notAssignedProgramTimeInSeconds >= 0)
+              ProgressTimeBriefBar(
+                onSessionTap: (_) {},
+                program: Program(
+                    programTitle: _programNameController.text,
+                    programUid: const Uuid().v4(),
+                    programDescription: '',
+                    programTimeInSeconds: _programTimeInSeconds,
+                    progressedProgramTimeInSeconds: 0,
+                    programSessions: _sessions),
+                selectedSessionUid: null,
+              ),
 
-                if (_errorText != null)
-                  SizedBox(
-                    height: 30,
-                    child: Center(
-                      child: Text(_errorText!,
-                          style: TextStyle(color: Colors.red),
-                          textAlign: TextAlign.center),
-                    ),
-                  ),
-                AppTextField(
-                  height: 50,
-                  maxLines: 1,
-                  controller: _programNameController,
-                  hintText: '생성할 프로그램의 이름을 입력해주세요.',
-                  suffixIcon: IconButton(
-                      // onPressed: () => _openSideScreen(300),
-                      onPressed: () => _openWriteProgramDescriptionDialog(),
-                      icon: Icon(Symbols.edit_note, color: Colors.white)),
+            if (_errorText != null)
+              SizedBox(
+                height: 30,
+                child: Center(
+                  child: Text(_errorText!,
+                      style: TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center),
                 ),
-                // ProgramTimeSelector(),
-                _ProgramTimeSection(),
-                const Gap(5),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _addSectionContainer(),
-                        SizedBox(
-                          height: _sessions.length < 6
-                              ? _sessions.length * 60
-                              : 300,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                ..._sessions.map((session) => _SessionTile(
-                                      session: session,
-                                      trailing: IconButton(
-                                        onPressed: () =>
-                                            _removeSession(session),
-                                        icon: Icon(
-                                          Symbols.delete,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    )),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 40,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      AppTextButton(
-                        onPressed: () => Navigator.pop(context),
-                        text: '취소',
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                      ),
-                      AppTextButton(
-                        onPressed: () async => await _saveProgram(),
-                        text: '저장',
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                      )
-                    ],
-                  ),
-                ),
-              ],
+              ),
+            AppTextField(
+              height: 50,
+              maxLines: 1,
+              controller: _programNameController,
+              hintText: '생성할 프로그램의 이름을 입력해주세요.',
+              onChanged: (value) => _validateProgram(),
+              suffixIcon: IconButton(
+                  // onPressed: () => _openSideScreen(300),
+                  onPressed: () => _openWriteProgramDescriptionDialog(),
+                  icon: Icon(Symbols.edit_note, color: Colors.white)),
             ),
-          ),
+            // ProgramTimeSelector(),
+            _ProgramTimeSection(),
+            const Gap(5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _addSessionContainer(),
+                    SizedBox(
+                      height:
+                          _sessions.length < 6 ? _sessions.length * 60 : 300,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            ..._sessions.map((session) => _SessionTile(
+                                  session: session,
+                                  trailing: IconButton(
+                                    onPressed: () => _removeSession(session),
+                                    icon: Icon(
+                                      Symbols.delete,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              height: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AppTextButton(
+                    onPressed: () => Navigator.pushReplacement(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation1, animation2) =>
+                            const ProgramCollectionScreen(),
+                        transitionDuration: Duration.zero,
+                        reverseTransitionDuration: Duration.zero,
+                      ),
+                    ),
+                    text: '취소',
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                  ),
+                  AppTextButton(
+                    onPressed: () async => await _saveProgram(),
+                    isEnabled: _isFormValid, // validator로...
+                    text: '프로그램 저장',
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
-        // if (_isOpenSideScreen) // 삭제요망
-        //   SizedBox(
-        //     width: _sessionWindowSize.width,
-        //     height: _windowSize.height,
-        //     child: _WriteProgramDescriptionSideScreen(
-        //       sideScreenSize: _sessionWindowSize,
-        //       onBackButtonPressed: () => _closeSideScreen(),
-        //     ),
-        //   )
-      ],
+      ),
     );
   }
 
-  Container _addSectionContainer() {
+  Container _addSessionContainer() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       height: 100,
       decoration: BoxDecoration(color: Colors.black),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          AppTextField(
-            height: 50,
-            maxLines: 1,
-            filledColor: Colors.transparent,
-            controller: _sessionNameController,
-            hintText: '추가할 세션 이름을 입력해주세요.',
-            suffixIcon: _sessionNameController.text.isEmpty ||
-                    _sessionNameController.text == ''
-                ? null
-                : GestureDetector(
-                    onTap: () => _addSession(),
-                    child: MouseRegion(
-                      // 마우스 오버시 색상 변경
-                      onEnter: (event) => setState(
-                          () => _isMouseOveringOnAddSessionButton = true),
-                      onExit: (event) => setState(
-                          () => _isMouseOveringOnAddSessionButton = false),
-                      child: Icon(
-                        Symbols.add,
-                        color: _isMouseOveringOnAddSessionButton
-                            ? Colors.white
-                            : Colors.grey,
-                      ),
-                    ),
-                  ),
-            onChanged: (value) {
-              setState(() {});
-            },
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text('세션 시간 '),
-                  _timeTextField(
-                      controller: _sessionHourController,
-                      maxValue: 23,
-                      hintText: '0',
-                      height: 40,
-                      width: 70,
-                      filledColor: Colors.grey.withOpacity(0.1)),
-                  Text('시간'),
-                  _timeTextField(
-                      controller: _sessionMinuteController,
-                      maxValue: 59,
-                      hintText: '00',
-                      height: 40,
-                      width: 70,
-                      filledColor: Colors.grey.withOpacity(0.1)),
-                  Text('분'),
-                ],
+      child: _programTimeInSeconds == 0
+          ? const SizedBox.shrink(
+              child: Center(
+                child: Text('프로그램 소요시간을 입력해주세요.'),
               ),
-              Text(
-                  '잔여 시간 ${_remainingProgramTime.inHours}:${_remainingProgramTime.inMinutes % 60 == 0 ? '00' : _remainingProgramTime.inMinutes % 60}'),
-            ],
-          ),
-        ],
-      ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Gap(10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text('세션 시간 '),
+                        _timeTextField(
+                            controller: _sessionHourController,
+                            maxValue: 23,
+                            hintText: '0',
+                            height: 40,
+                            width: 70,
+                            filledColor: Colors.grey.withOpacity(0.1)),
+                        Text('시간'),
+                        _timeTextField(
+                            controller: _sessionMinuteController,
+                            maxValue: 59,
+                            hintText: '00',
+                            height: 40,
+                            width: 70,
+                            filledColor: Colors.grey.withOpacity(0.1)),
+                        Text('분'),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                            '잔여 시간 ${_notAssignedProgramTimeInSeconds ~/ 3600}'),
+                        Text(
+                            ':${(_notAssignedProgramTimeInSeconds % 3600) ~/ 60 < 10 ? '0' : ''}${(_notAssignedProgramTimeInSeconds % 3600) ~/ 60}')
+                      ],
+                    ),
+                  ],
+                ),
+                AppTextField(
+                  height: 50,
+                  maxLines: 1,
+                  filledColor: Colors.transparent,
+                  controller: _sessionNameController,
+                  hintText: '추가할 세션 이름을 입력해주세요.',
+                  suffixIcon: _sessionNameController.text.isEmpty ||
+                          _sessionNameController.text == ''
+                      ? null
+                      : GestureDetector(
+                          onTap: () => _addSession(),
+                          child: MouseRegion(
+                            // 마우스 오버시 색상 변경
+                            onEnter: (event) => setState(
+                                () => _isMouseOveringOnAddSessionButton = true),
+                            onExit: (event) => setState(() =>
+                                _isMouseOveringOnAddSessionButton = false),
+                            child: Icon(
+                              Symbols.add,
+                              color: _isMouseOveringOnAddSessionButton
+                                  ? Colors.white
+                                  : Colors.grey,
+                            ),
+                          ),
+                        ),
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                ),
+              ],
+            ),
     );
   }
 
@@ -257,6 +271,7 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
     int? height,
     int? width,
     Color? filledColor,
+    Function(String)? onChanged,
   }) {
     return AppTextField(
       inputFormatters: [
@@ -271,8 +286,9 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
       hintText: hintText,
       onChanged: (val) {
         if (int.tryParse(val) != null && int.tryParse(val)! > maxValue) {
-          controller.text = hintText;
+          controller.text = maxValue.toString();
         }
+        onChanged?.call(val);
       },
     );
   }
@@ -284,65 +300,58 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text('매일 '),
+          Text('프로그램 총 소요 시간 : '),
           _timeTextField(
             controller: _programHourController,
-            maxValue: 23,
+            maxValue: 24,
             hintText: '0',
+            onChanged: (val) {
+              final newProgramTimeInSeconds =
+                  val.isEmpty || val == '' ? 0 : int.parse(val) * 60 * 60;
+              final currentAssignedTimeInSeconds = _sessions.fold(
+                  0, (value, session) => value + session.sessionTimeInSeconds);
+
+              setState(() {
+                _updateErrorText(null);
+                _programTimeInSeconds =
+                    val.isEmpty || val == '' ? 0 : int.parse(val) * 60 * 60;
+                _notAssignedProgramTimeInSeconds =
+                    _programTimeInSeconds - currentAssignedTimeInSeconds;
+                if (_notAssignedProgramTimeInSeconds < 0) {
+                  _updateErrorText('프로그램 소요 시간은 세션 시간의 총 합보다 작을 수 없습니다.');
+                }
+              });
+              _validateProgram();
+            },
           ),
-          Text('시'),
-          _timeTextField(
-            controller: _programMinuteController,
-            maxValue: 59,
-            hintText: '00',
-          ),
-          Text('분 시작'),
+          Text('시간'),
         ],
       ),
     );
   }
 
-  void _updateWindowSize() {
+  Future<void> _updateWindowSize({Size? size}) async {
     // 기본 305 + 에러텍스트 30 + 세션 60 * 세션 수
     final height = 305 +
         (_errorText != null ? 30 : 0) +
         (_sessions.length < 6 ? _sessions.length * 60 : 300);
 
-    _windowSize = Size(_windowSize.width, height.toDouble());
-
-    // if (_isOpenSideScreen) {
-    //   windowManager.setSize(Size(
-    //       _windowSize.width + _sessionWindowSize.width, height.toDouble()));
-    // } else {
-    //   windowManager.setSize(_windowSize);
-    // }
-    windowManager.setSize(_windowSize);
+    if (!mounted) return;
+    WindowSize.updateWindowSize(
+        size: Size(WindowSize.currentSize.width, height.toDouble()),
+        onExpanded: () => setState(() {}));
   }
 
-  // void _openSideScreen(double sideScreenWidth) {
-  //   _sessionWindowSize = Size(sideScreenWidth, _windowSize.height);
-  //   windowManager
-  //       .setSize(Size(_windowSize.width + sideScreenWidth, _windowSize.height));
-  //   setState(() => _isOpenSideScreen = true);
-  // }
-
-  // void _closeSideScreen() {
-  //   windowManager.setSize(_windowSize);
-  //   setState(() => _isOpenSideScreen = false);
-  // }
-
-  void _updateErrorText(String? text) {
-    setState(() {
-      _errorText = text;
-    });
-    _updateWindowSize();
+  Future<void> _updateErrorText(String? text) async {
+    _errorText = text;
+    await _updateWindowSize();
   }
 
   void _openWriteProgramDescriptionDialog() {
     showDialog(
       context: context,
       builder: (context) {
-        final textFieldHeight = _windowSize.height.toInt() - 128;
+        final textFieldHeight = WindowSize.currentSize.height.toInt() - 128;
         const fontSize = 14.0;
         return WriteTextDialog(
           hintText: '프로그램 설명을 입력해주세요.',
@@ -371,8 +380,8 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
     }
     // 세션시간이 잔여시간을 초과한 경우
     if (sessiontHour * 60 * 60 + sessiontMinute * 60 >
-        _remainingProgramTime.inSeconds) {
-      _updateErrorText('잔여시간을 초과했습니다.');
+        _notAssignedProgramTimeInSeconds) {
+      _updateErrorText('프로그램 잔여시간을 초과했습니다.');
       return;
     }
 
@@ -381,37 +390,33 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
         Session(
             sessionTitle: _sessionNameController.text,
             sessionUid: const Uuid().v4(),
-            progressedSessionTimeInSeconds:
-                sessiontHour * 60 * 60 + sessiontMinute * 60,
-            sessionRemainingTime: sessiontHour * 60 * 60 + sessiontMinute * 60,
+            progressedSessionTimeInSeconds: 0,
+            sessionTimeInSeconds: sessiontHour * 60 * 60 + sessiontMinute * 60,
             sessionPriority: _sessions.length,
             sessionMemo: ''),
       );
-      _remainingProgramTime -=
-          Duration(hours: sessiontHour, minutes: sessiontMinute);
-      _sessionNameController.clear();
-      _sessionHourController.clear();
-      _sessionMinuteController.clear();
-      _updateErrorText(null);
     });
+    _notAssignedProgramTimeInSeconds -=
+        sessiontHour * 60 * 60 + sessiontMinute * 60;
+    _sessionNameController.clear();
+    _sessionHourController.clear();
+    _sessionMinuteController.clear();
+    _updateErrorText(null);
+    _validateProgram();
   }
 
-  void _removeSession(Session session) {
-    setState(() {
-      // 잔여시간 재계산
-      _remainingProgramTime += Duration(
-          hours: session.progressedSessionTimeInSeconds ~/ 3600,
-          minutes: (session.progressedSessionTimeInSeconds % 3600) ~/ 60);
+  void _removeSession(Session session) async {
+    _sessions.remove(session);
+    _notAssignedProgramTimeInSeconds = _programTimeInSeconds -
+        _sessions.fold(0, (acc, session) => acc + session.sessionTimeInSeconds);
 
-      _sessions.remove(session);
+    // 세션 순서 재정렬
+    for (int i = 0; i < _sessions.length; i++) {
+      _sessions[i] = _sessions[i].copyWith(sessionPriority: i);
+    }
 
-      // 세션 순서 재정렬
-      for (int i = 0; i < _sessions.length; i++) {
-        _sessions[i] = _sessions[i].copyWith(sessionPriority: i);
-      }
-
-      _updateWindowSize();
-    });
+    await _updateWindowSize();
+    _validateProgram();
   }
 
   Future<void> _saveProgram() async {
@@ -431,136 +436,32 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
           programTitle: _programNameController.text,
           programUid: const Uuid().v4(),
           programDescription: _programDescription,
-          startedHour: int.tryParse(_programHourController.text) ?? 0,
-          startedMinute: int.tryParse(_programMinuteController.text) ?? 0,
-          programTimeInSeconds: _remainingProgramTime.inSeconds,
+          programTimeInSeconds: _programTimeInSeconds,
+          progressedProgramTimeInSeconds: 0,
           programSessions: _sessions));
 
-      await ref.read(fetchedProgramsProvider.notifier).refresh();
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (context, _, __) => const ProgramCollectionScreen(),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ));
     }
   }
-}
 
-class WriteTextDialog extends StatefulWidget {
-  const WriteTextDialog({
-    super.key,
-    required this.fontSize,
-    required this.textFieldHeight,
-    required this.hintText,
-    required this.onSave,
-    this.initialText,
-  });
-
-  final double fontSize;
-  final int textFieldHeight;
-  final String hintText;
-  final Function(String) onSave;
-  final String? initialText;
-
-  @override
-  State<WriteTextDialog> createState() => _WriteTextDialogState();
-}
-
-class _WriteTextDialogState extends State<WriteTextDialog> {
-  late final TextEditingController controller = TextEditingController(
-    text: widget.initialText == null || widget.initialText == ''
-        ? null
-        : widget.initialText,
-  );
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColor.primaryMain,
-          borderRadius: BorderRadius.circular(5),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AppTextField(
-              isFontSizeAuto: false,
-              fontSize: widget.fontSize,
-              height: widget.textFieldHeight,
-              maxLines: widget.textFieldHeight ~/ widget.fontSize,
-              controller: controller,
-              hintText: widget.hintText,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                AppTextButton(
-                  onPressed: () => Navigator.pop(context),
-                  text: '취소',
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
-                AppTextButton(
-                  onPressed: () async {
-                    await widget.onSave(controller.text);
-                    Navigator.pop(context);
-                  },
-                  text: '저장',
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
+  void _validateProgram() {
+    setState(() {
+      _isFormValid = _programNameController.text.isNotEmpty &&
+          _programNameController.text != '' &&
+          _sessions.isNotEmpty &&
+          _programTimeInSeconds > 0 &&
+          _notAssignedProgramTimeInSeconds >= 0;
+    });
   }
 }
 
-class _WriteProgramDescriptionSideScreen extends StatelessWidget {
-  const _WriteProgramDescriptionSideScreen({
-    super.key,
-    required this.sideScreenSize,
-    this.onBackButtonPressed,
-  });
-
-  final Size sideScreenSize;
-  final Function()? onBackButtonPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppScaffold(
-      backgroundColor: AppColor.primaryMain.withOpacity(0.6),
-      titleBarActions: [
-        IconButton(
-            onPressed: onBackButtonPressed,
-            icon: Icon(
-              Symbols.arrow_back_ios,
-              color: Colors.white,
-              size: 18,
-            ))
-      ],
-      body: Column(
-        children: [
-          AppTextField(
-              // padding: const EdgeInsets.only(right: 10),
-              isFontSizeAuto: false,
-              height: (sideScreenSize.height - 80).toInt(),
-              maxLines: 100,
-              controller: TextEditingController(),
-              hintText: '프로그램에 대한 설명을 입력해주세요.'),
-        ],
-      ),
-    );
-  }
-}
-
-class _SessionTile extends StatelessWidget {
+class _SessionTile extends StatefulWidget {
   const _SessionTile(
       {super.key, required this.session, required this.trailing});
 
@@ -568,29 +469,39 @@ class _SessionTile extends StatelessWidget {
   final Widget trailing;
 
   @override
+  State<_SessionTile> createState() => _SessionTileState();
+}
+
+class _SessionTileState extends State<_SessionTile> {
+  bool _isHovering = false;
+  @override
   Widget build(BuildContext context) {
-    Duration sessionTime =
-        Duration(seconds: session.progressedSessionTimeInSeconds);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      height: 60,
-      decoration:
-          BoxDecoration(color: AppColor.sessionColor(session.sessionPriority)),
-      child: ListTile(
-        leading: Text(
-          '${session.sessionPriority + 1}',
-          style: TextStyle(fontSize: 14, color: Colors.white),
+    Duration sessionRemainingDuration =
+        Duration(seconds: widget.session.sessionRemainingTime);
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovering = true),
+      onExit: (_) => setState(() => _isHovering = false),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        height: 60,
+        decoration: BoxDecoration(
+            color: AppColor.sessionColor(widget.session.sessionPriority)),
+        child: ListTile(
+          leading: Text(
+            '${widget.session.sessionPriority + 1}',
+            style: TextStyle(fontSize: 14, color: Colors.white),
+          ),
+          title: Text(widget.session.sessionTitle,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
+          subtitle: Text(
+            '${sessionRemainingDuration.inHours}:${sessionRemainingDuration.inMinutes % 60 == 0 ? '00' : sessionRemainingDuration.inMinutes % 60}',
+            style: TextStyle(fontSize: 12, color: Colors.grey[300]),
+          ),
+          trailing: widget.trailing,
         ),
-        title: Text(session.sessionTitle,
-            style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Colors.white)),
-        subtitle: Text(
-          '${sessionTime.inHours}:${sessionTime.inMinutes % 60 == 0 ? '00' : sessionTime.inMinutes % 60}',
-          style: TextStyle(fontSize: 12, color: Colors.grey[300]),
-        ),
-        trailing: trailing,
       ),
     );
   }

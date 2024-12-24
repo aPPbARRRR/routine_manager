@@ -57,10 +57,15 @@ class AppColor {
     }
   }
 
+  // accentPink
+  static const Color accentPink = Color(0xFFff00bf);
+
   // Primary
+  static const Color primaryMainLight = Color.fromARGB(255, 42, 84, 153);
+  static const Color primaryMainLight2 = Color.fromARGB(255, 50, 98, 178);
   static const Color primaryMain = Color.fromARGB(255, 36, 72, 126);
   static const Color primaryMainDark = Color.fromARGB(255, 31, 59, 102);
-  static const Color primaryMainLight = Color.fromARGB(255, 204, 204, 204);
+  static const Color primaryMainDark2 = Color.fromARGB(255, 25, 47, 82);
 
   // secondary
   static const Color secondaryGreen = Color(0xFF00ea00);

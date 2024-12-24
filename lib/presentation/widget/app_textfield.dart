@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:routine_manager/presentation/constant/app_color.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -21,6 +22,7 @@ class AppTextField extends StatelessWidget {
     this.fontSize,
     this.hintFontSize,
     this.padding,
+    this.isReadOnly = false,
   });
 
   final int height;
@@ -40,7 +42,7 @@ class AppTextField extends StatelessWidget {
   final double? fontSize;
   final double? hintFontSize;
   final EdgeInsets? padding;
-
+  final bool isReadOnly;
   @override
   Widget build(BuildContext context) {
     final OutlineInputBorder border = OutlineInputBorder(
@@ -57,13 +59,12 @@ class AppTextField extends StatelessWidget {
         width: width?.toDouble() ?? constraint.maxWidth,
         child: TextField(
           onChanged: onChanged,
-
+          readOnly: isReadOnly,
           style: const TextStyle(
             color: Colors.white,
           ),
           maxLines: maxLines,
           maxLength: maxLength,
-
           cursorWidth: 2,
           // cursorColor: Color.fromARGB(255, 7, 36, 57),
           cursorColor: Colors.grey,

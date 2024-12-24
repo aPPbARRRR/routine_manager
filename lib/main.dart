@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:routine_manager/presentation/constant/app_color.dart';
 import 'package:routine_manager/presentation/constant/window_size.dart';
-import 'package:routine_manager/presentation/layout/default_layout.dart';
+import 'package:talker/talker.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'presentation/screen/program_collection_screen.dart';
+
+final Talker talker = Talker(); // ##
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
 
   WindowOptions windowOptions = const WindowOptions(
-    size: WindowSize.defaultSize, // 세로 길이 타이틀바(30) 제외 각 위젯당 100씩 할당
+    // size: WindowSize.defaultSize, // 세로 길이 타이틀바(30) 제외 각 위젯당 100씩 할당
     center: true,
     backgroundColor: Colors.transparent,
     titleBarStyle: TitleBarStyle.hidden,
@@ -39,17 +42,22 @@ class MyApp extends StatelessWidget {
 
     return ProviderScope(
         child: MaterialApp(
-      theme: ThemeData(
-          // 기본 텍스트 화이트
-          textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: Colors.white),
-      )),
-      debugShowCheckedModeBanner: false,
-      builder: (context, child) {
-        child = virtualWindowFrameBuilder(context, child);
-        return child;
-      },
-      home: const ProgramCollectionScreen(),
-    ));
+            theme: ThemeData(
+              scrollbarTheme: ScrollbarThemeData(
+                thumbColor: WidgetStateProperty.all(AppColor.primaryMainLight),
+              ),
+              textSelectionTheme: const TextSelectionThemeData(
+                selectionColor: AppColor.gray50,
+              ),
+              textTheme: const TextTheme(
+                bodyMedium: TextStyle(color: Colors.white),
+              ),
+            ),
+            debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              child = virtualWindowFrameBuilder(context, child);
+              return child;
+            },
+            home: const ProgramCollectionScreen()));
   }
 }
