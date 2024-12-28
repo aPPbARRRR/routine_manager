@@ -234,12 +234,31 @@ class _ProgressBriefTileState extends State<ProgressBriefTile> {
           content: '실행중인 프로그램이 종료됩니다. 계속하시겠습니까?',
           confirmText: '종료',
           onConfirm: () async {
-            await WindowSize.verticalExpand(
-              addingHeight: isExpanded
-                  ? -(widget.program.programSessions.length * 60).toDouble()
-                  : widget.program.programSessions.length * 60,
-              onExpanded: () => widget.onProgramStop?.call(widget.program),
-            );
+            // 종료시 화면 크기 조절
+            // 프로그램 종료 후 진행중인 프로그램이 없을 경우 90 + 75로.
+            final addingHeight = isExpanded
+                ? -110 +
+                    (widget.program.programSessions.length <= 5
+                        ? -(widget.program.programSessions.length * 60)
+                        : -(5 * 60)) +
+                    5
+                : -110;
+
+            bool isLessThanMinimunSize =
+                WindowSize.currentSize.height + addingHeight < 90 + 75;
+
+            if (isLessThanMinimunSize) {
+              await WindowSize.updateWindowSize(
+                size: Size(WindowSize.currentSize.width, 90 + 75),
+                onExpanded: () => widget.onProgramStop?.call(widget.program),
+              );
+            } else {
+              await WindowSize.verticalExpand(
+                addingHeight:
+                    isLessThanMinimunSize ? 90 + 75 : addingHeight.toDouble(),
+                onExpanded: () => widget.onProgramStop?.call(widget.program),
+              );
+            }
           },
         ),
       ),
@@ -252,20 +271,6 @@ class _ProgressBriefTileState extends State<ProgressBriefTile> {
   void onSessionHovering(Session? session) => setState(() {
         hoveringSession = session;
       });
-
-  // Future<void> _toggleExpanded() async {
-  //   if (isExpanded) {
-  //     setState(() => isExpanded = !isExpanded);
-  //     await WindowSize.verticalExpand(
-  //         addingHeight:
-  //             -(widget.program.programSessions.length * 60 + 5).toDouble());
-  //   } else {
-  //     await WindowSize.verticalExpand(
-  //         addingHeight:
-  //             (widget.program.programSessions.length * 60 + 5).toDouble());
-  //     setState(() => isExpanded = true);
-  //   }
-  // }
 
   Future<void> _toggleExpanded() async {
     await WindowSize.verticalExpand(
