@@ -230,7 +230,7 @@ class _ProgressBriefTileState extends State<ProgressBriefTile> {
       onPressed: () => showDialog(
         context: context,
         builder: (context) => AppDialogWithTwoButtons(
-          title: '프로그램 종료',
+          // title: '프로그램 종료',
           content: '실행중인 프로그램이 종료됩니다. 계속하시겠습니까?',
           confirmText: '종료',
           onConfirm: () async {
