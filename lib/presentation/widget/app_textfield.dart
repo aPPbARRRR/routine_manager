@@ -23,6 +23,7 @@ class AppTextField extends StatelessWidget {
     this.hintFontSize,
     this.padding,
     this.isReadOnly = false,
+    this.focusNode,
   });
 
   final int height;
@@ -43,6 +44,8 @@ class AppTextField extends StatelessWidget {
   final double? hintFontSize;
   final EdgeInsets? padding;
   final bool isReadOnly;
+  final FocusNode? focusNode;
+
   @override
   Widget build(BuildContext context) {
     final OutlineInputBorder border = OutlineInputBorder(
@@ -58,6 +61,7 @@ class AppTextField extends StatelessWidget {
         height: height.toDouble(),
         width: width?.toDouble() ?? constraint.maxWidth,
         child: TextField(
+          focusNode: focusNode,
           onChanged: onChanged,
           readOnly: isReadOnly,
           style: const TextStyle(

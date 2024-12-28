@@ -78,20 +78,24 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
         body: ListView(
           // crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (_programTimeInSeconds <= 0 ||
+                _notAssignedProgramTimeInSeconds < 0)
+              const SizedBox(
+                height: 30,
+              ),
             if (_programTimeInSeconds > 0 &&
                 _notAssignedProgramTimeInSeconds >= 0)
               ProgressTimeBriefBar(
                 onSessionTap: (_) {},
                 program: Program(
                     programTitle: _programNameController.text,
-                    programUid: const Uuid().v4(),
-                    programDescription: '',
+                    programUid: _programUid,
+                    programDescription: _programDescription,
                     programTimeInSeconds: _programTimeInSeconds,
                     progressedProgramTimeInSeconds: 0,
                     programSessions: _sessions),
                 selectedSessionUid: null,
               ),
-
             if (_errorText != null)
               SizedBox(
                 height: 30,
@@ -112,7 +116,6 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
                   onPressed: () => _openWriteProgramDescriptionDialog(),
                   icon: Icon(Symbols.edit_note, color: Colors.white)),
             ),
-            // ProgramTimeSelector(),
             _ProgramTimeSection(),
             const Gap(5),
             Padding(
@@ -274,8 +277,10 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
     int? width,
     Color? filledColor,
     Function(String)? onChanged,
+    FocusNode? focusNode,
   }) {
     return AppTextField(
+      focusNode: focusNode,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
       ],
@@ -313,17 +318,17 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
               final currentAssignedTimeInSeconds = _sessions.fold(
                   0, (value, session) => value + session.sessionTimeInSeconds);
 
-              setState(() {
+              _programTimeInSeconds =
+                  val.isEmpty || val == '' ? 0 : int.parse(val) * 60 * 60;
+              _notAssignedProgramTimeInSeconds =
+                  _programTimeInSeconds - currentAssignedTimeInSeconds;
+              if (_notAssignedProgramTimeInSeconds < 0) {
+                _updateErrorText(
+                    '프로그램 소요 시간은 세션 시간의 총 합보다 작을 수 없습니다.'); // setstate 호출
+              } else {
                 _updateErrorText(null);
-                _programTimeInSeconds =
-                    val.isEmpty || val == '' ? 0 : int.parse(val) * 60 * 60;
-                _notAssignedProgramTimeInSeconds =
-                    _programTimeInSeconds - currentAssignedTimeInSeconds;
-                if (_notAssignedProgramTimeInSeconds < 0) {
-                  _updateErrorText('프로그램 소요 시간은 세션 시간의 총 합보다 작을 수 없습니다.');
-                }
-              });
-              _validateProgram();
+                _validateProgram();
+              }
             },
           ),
           Text('시간'),
@@ -339,7 +344,7 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
         (_sessions.length < 6 ? _sessions.length * 60 : 300);
 
     if (!mounted) return;
-    WindowSize.updateWindowSize(
+    await WindowSize.updateWindowSize(
         size: Size(WindowSize.currentSize.width, height.toDouble()),
         onExpanded: () => setState(() {}));
   }
@@ -383,7 +388,7 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
     // 세션시간이 잔여시간을 초과한 경우
     if (sessiontHour * 60 * 60 + sessiontMinute * 60 >
         _notAssignedProgramTimeInSeconds) {
-      _updateErrorText('프로그램 잔여시간을 초과했습니다.');
+      _updateErrorText('프로그램 잔여시간을 초과할 수 없습니다.');
       return;
     }
 
@@ -456,6 +461,7 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
 
   void _validateProgram() {
     setState(() {
+      talker.debug('validateProgram'); // ##
       _isFormValid = _programNameController.text.isNotEmpty &&
           _programNameController.text != '' &&
           _sessions.isNotEmpty &&
