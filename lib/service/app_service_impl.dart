@@ -1,11 +1,11 @@
 import 'package:routine_manager/model/program_extension.dart';
 import 'package:routine_manager/model/program_history.dart';
 
-import '../../model/program.dart';
-import '../../model/session.dart';
-import '../../model/session_history.dart';
-import '../app_repository.dart';
-import '../app_service.dart';
+import '../model/program.dart';
+import '../model/session.dart';
+import '../model/session_history.dart';
+import '../data/repository/app_repository.dart';
+import 'app_service.dart';
 
 class AppServiceImpl implements AppService {
   AppServiceImpl({required this.repository});

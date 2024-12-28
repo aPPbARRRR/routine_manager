@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:routine_manager/presentation/constant/app_color.dart';
-import 'package:routine_manager/presentation/constant/window_size.dart';
+
 import 'package:talker/talker.dart';
 import 'package:window_manager/window_manager.dart';
 

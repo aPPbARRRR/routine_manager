@@ -9,6 +9,7 @@ part of 'session.dart';
 _$SessionImpl _$$SessionImplFromJson(Map<String, dynamic> json) =>
     _$SessionImpl(
       sessionTitle: json['sessionTitle'] as String,
+      programUid: json['programUid'] as String,
       sessionUid: json['sessionUid'] as String,
       progressedSessionTimeInSeconds:
           (json['progressedSessionTimeInSeconds'] as num).toInt(),
@@ -20,6 +21,7 @@ _$SessionImpl _$$SessionImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$SessionImplToJson(_$SessionImpl instance) =>
     <String, dynamic>{
       'sessionTitle': instance.sessionTitle,
+      'programUid': instance.programUid,
       'sessionUid': instance.sessionUid,
       'progressedSessionTimeInSeconds': instance.progressedSessionTimeInSeconds,
       'sessionTimeInSeconds': instance.sessionTimeInSeconds,

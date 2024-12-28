@@ -1,17 +1,53 @@
-# routine_manager
+# Routine Manager
 
-A new Flutter project.
+시간이 분배된 연속된 일정의 관리를 위한 데스크톱 애플리케이션입니다.
 
-## Getting Started
+![프로그램 실행 화면 메인](/assets/images/main_screen.png) (메인 화면 스크린샷)
 
-This project is a starting point for a Flutter application.
+## 사용 예시
 
-A few resources to get you started if this is your first Flutter project:
+- 📚 **학습 계획 관리**
+  - TOEIC 시험 준비 (듣기 30분 → 문법 45분 → 독해 60분)
+  - 프로그래밍 학습 (학습 60분 → 실습 120분)
+  
+- 🎯 **업무 시간 관리**
+  - 일일 업무 계획 (이메일 확인 15분 → 미팅 60분 → 문서작업 120분)
+  
+- 📝 **컨텐츠 제작 일정 관리**
+  - 영상 제작 관리 (자료조사 60분 → 스크립트 작성 90분 → 편집 120분)
+  - 블로그 포스팅 (주제 선정 30분 → 개요 작성 30분 → 본문 작성 120분 → 검토 30분)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# routine_manager
+![일정 프로그램 생성 과정](/assets/images/create_program.gif) (프로그램 생성하는 과정 GIF)
+
+## 주요 기능
+
+### ⚡ 일정 프로그램 생성
+- 프로그램 제목과 설명 입력
+- 세부 세션 추가 및 시간 설정
+
+### 🎯 실시간 진행 상황
+- 프로그램 전체 진행정보 표시
+- 실시간 진행상황 표시
+
+![프로그램 실행 화면](/assets/images/running_program.png) (프로그램 실행 중 화면 스크린샷)
+
+### 📝 세션별 메모 기능
+- 세션 진행 중 메모 작성
+- 이전 기록 조회 가능
+- 프로그램 종료 후 히스토리로 기록을 확인
+
+### 💻 편의기능
+- 화면 상단 고정기능
+
+### 📊 기록
+- 프로그램별 실행 이력 확인
+
+![히스토리 화면](/assets/images/statistics.png) (히스토리 스크린샷)
+
+## 시작하기
+
+### 다운로드(배포 없을 시 코드 빌드 안내로 대체)
+- [Windows Store](링크)
+- [Mac App Store](링크)
+- [Linux Package](링크)

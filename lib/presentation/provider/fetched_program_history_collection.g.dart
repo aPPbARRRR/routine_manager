@@ -7,7 +7,7 @@ part of 'fetched_program_history_collection.dart';
 // **************************************************************************
 
 String _$fetchedProgramHistoryCollectionHash() =>
-    r'03c42ba08b787a400c40b21b3898799d667865c6';
+    r'5b2dc2b3155daa335208b44fd388500957c19b0e';
 
 /// Copied from Dart SDK
 class _SystemHash {

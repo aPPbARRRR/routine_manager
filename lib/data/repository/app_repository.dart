@@ -1,9 +1,9 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:routine_manager/model/program_history.dart';
 
-import '../model/program.dart';
-import '../model/session_history.dart';
-import 'impl/app_repository_impl.dart';
+import '../../model/program.dart';
+import '../../model/session_history.dart';
+import 'app_repository_impl.dart';
 
 final appRepositoryProvider = Provider<AppRepository>((ref) {
   return AppRepositoryImpl();

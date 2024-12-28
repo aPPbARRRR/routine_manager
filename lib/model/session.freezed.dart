@@ -21,6 +21,7 @@ Session _$SessionFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Session {
   String get sessionTitle => throw _privateConstructorUsedError;
+  String get programUid => throw _privateConstructorUsedError;
   String get sessionUid => throw _privateConstructorUsedError;
   int get progressedSessionTimeInSeconds => throw _privateConstructorUsedError;
   int get sessionTimeInSeconds => throw _privateConstructorUsedError;
@@ -39,6 +40,7 @@ abstract class $SessionCopyWith<$Res> {
   @useResult
   $Res call(
       {String sessionTitle,
+      String programUid,
       String sessionUid,
       int progressedSessionTimeInSeconds,
       int sessionTimeInSeconds,
@@ -60,6 +62,7 @@ class _$SessionCopyWithImpl<$Res, $Val extends Session>
   @override
   $Res call({
     Object? sessionTitle = null,
+    Object? programUid = null,
     Object? sessionUid = null,
     Object? progressedSessionTimeInSeconds = null,
     Object? sessionTimeInSeconds = null,
@@ -70,6 +73,10 @@ class _$SessionCopyWithImpl<$Res, $Val extends Session>
       sessionTitle: null == sessionTitle
           ? _value.sessionTitle
           : sessionTitle // ignore: cast_nullable_to_non_nullable
+              as String,
+      programUid: null == programUid
+          ? _value.programUid
+          : programUid // ignore: cast_nullable_to_non_nullable
               as String,
       sessionUid: null == sessionUid
           ? _value.sessionUid
@@ -104,6 +111,7 @@ abstract class _$$SessionImplCopyWith<$Res> implements $SessionCopyWith<$Res> {
   @useResult
   $Res call(
       {String sessionTitle,
+      String programUid,
       String sessionUid,
       int progressedSessionTimeInSeconds,
       int sessionTimeInSeconds,
@@ -123,6 +131,7 @@ class __$$SessionImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? sessionTitle = null,
+    Object? programUid = null,
     Object? sessionUid = null,
     Object? progressedSessionTimeInSeconds = null,
     Object? sessionTimeInSeconds = null,
@@ -133,6 +142,10 @@ class __$$SessionImplCopyWithImpl<$Res>
       sessionTitle: null == sessionTitle
           ? _value.sessionTitle
           : sessionTitle // ignore: cast_nullable_to_non_nullable
+              as String,
+      programUid: null == programUid
+          ? _value.programUid
+          : programUid // ignore: cast_nullable_to_non_nullable
               as String,
       sessionUid: null == sessionUid
           ? _value.sessionUid
@@ -163,6 +176,7 @@ class __$$SessionImplCopyWithImpl<$Res>
 class _$SessionImpl implements _Session {
   const _$SessionImpl(
       {required this.sessionTitle,
+      required this.programUid,
       required this.sessionUid,
       required this.progressedSessionTimeInSeconds,
       required this.sessionTimeInSeconds,
@@ -174,6 +188,8 @@ class _$SessionImpl implements _Session {
 
   @override
   final String sessionTitle;
+  @override
+  final String programUid;
   @override
   final String sessionUid;
   @override
@@ -187,7 +203,7 @@ class _$SessionImpl implements _Session {
 
   @override
   String toString() {
-    return 'Session(sessionTitle: $sessionTitle, sessionUid: $sessionUid, progressedSessionTimeInSeconds: $progressedSessionTimeInSeconds, sessionTimeInSeconds: $sessionTimeInSeconds, sessionPriority: $sessionPriority, sessionMemo: $sessionMemo)';
+    return 'Session(sessionTitle: $sessionTitle, programUid: $programUid, sessionUid: $sessionUid, progressedSessionTimeInSeconds: $progressedSessionTimeInSeconds, sessionTimeInSeconds: $sessionTimeInSeconds, sessionPriority: $sessionPriority, sessionMemo: $sessionMemo)';
   }
 
   @override
@@ -197,6 +213,8 @@ class _$SessionImpl implements _Session {
             other is _$SessionImpl &&
             (identical(other.sessionTitle, sessionTitle) ||
                 other.sessionTitle == sessionTitle) &&
+            (identical(other.programUid, programUid) ||
+                other.programUid == programUid) &&
             (identical(other.sessionUid, sessionUid) ||
                 other.sessionUid == sessionUid) &&
             (identical(other.progressedSessionTimeInSeconds,
@@ -216,6 +234,7 @@ class _$SessionImpl implements _Session {
   int get hashCode => Object.hash(
       runtimeType,
       sessionTitle,
+      programUid,
       sessionUid,
       progressedSessionTimeInSeconds,
       sessionTimeInSeconds,
@@ -239,6 +258,7 @@ class _$SessionImpl implements _Session {
 abstract class _Session implements Session {
   const factory _Session(
       {required final String sessionTitle,
+      required final String programUid,
       required final String sessionUid,
       required final int progressedSessionTimeInSeconds,
       required final int sessionTimeInSeconds,
@@ -249,6 +269,8 @@ abstract class _Session implements Session {
 
   @override
   String get sessionTitle;
+  @override
+  String get programUid;
   @override
   String get sessionUid;
   @override

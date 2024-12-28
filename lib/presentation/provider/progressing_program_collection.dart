@@ -128,7 +128,9 @@ class ProgressingProgramCollection extends _$ProgressingProgramCollection {
     _programRunners[program.programUid]?.cancel();
     _selectedSessions.remove(program.programUid);
     state = [...state.where((p) => p.programUid != program.programUid)];
-    WakelockPlus.disable();
+    if (state.isEmpty) {
+      WakelockPlus.disable();
+    }
   }
 
   void updateSessionMemo(Session session, String memo) {

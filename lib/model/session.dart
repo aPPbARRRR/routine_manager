@@ -7,6 +7,7 @@ part 'session.g.dart';
 class Session with _$Session {
   const factory Session({
     required String sessionTitle,
+    required String programUid,
     required String sessionUid,
     required int progressedSessionTimeInSeconds,
     required int sessionTimeInSeconds,

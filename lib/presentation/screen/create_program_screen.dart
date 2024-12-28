@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:routine_manager/main.dart';
 import 'package:routine_manager/model/program.dart';
 import 'package:routine_manager/model/session.dart';
 import 'package:routine_manager/model/session_extension.dart';
@@ -47,6 +48,7 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
   late int _notAssignedProgramTimeInSeconds = _programTimeInSeconds -
       _sessions.fold(0, (acc, session) => acc + session.sessionTimeInSeconds);
   String _programDescription = '';
+  final String _programUid = const Uuid().v4();
 
   // @override
   // void initState() {
@@ -390,6 +392,7 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
         Session(
             sessionTitle: _sessionNameController.text,
             sessionUid: const Uuid().v4(),
+            programUid: _programUid,
             progressedSessionTimeInSeconds: 0,
             sessionTimeInSeconds: sessiontHour * 60 * 60 + sessiontMinute * 60,
             sessionPriority: _sessions.length,
@@ -431,10 +434,11 @@ class _CreateProgramScreenState extends ConsumerState<CreateProgramScreen> {
       _updateErrorText('세션을 추가해주세요.');
       return;
     } else {
+      talker.error(_programUid); // ##
       // save
       await ref.read(appServiceProvider).saveProgram(Program(
           programTitle: _programNameController.text,
-          programUid: const Uuid().v4(),
+          programUid: _programUid,
           programDescription: _programDescription,
           programTimeInSeconds: _programTimeInSeconds,
           progressedProgramTimeInSeconds: 0,

@@ -3,8 +3,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../model/program.dart';
 import '../model/program_history.dart';
 import '../model/session_history.dart';
-import 'app_repository.dart';
-import 'impl/app_service_impl.dart';
+import '../data/repository/app_repository.dart';
+import 'app_service_impl.dart';
 
 final appServiceProvider = Provider<AppService>((ref) {
   return AppServiceImpl(

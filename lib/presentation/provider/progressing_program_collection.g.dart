@@ -7,7 +7,7 @@ part of 'progressing_program_collection.dart';
 // **************************************************************************
 
 String _$progressingProgramCollectionHash() =>
-    r'594c6a94be5c00e9c6935f441e4aa3fe9608a8d3';
+    r'2e744d20dedcf9392dc91c9f9885bdc1358280e9';
 
 /// See also [ProgressingProgramCollection].
 @ProviderFor(ProgressingProgramCollection)

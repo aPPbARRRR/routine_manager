@@ -6,7 +6,7 @@ import '../../main.dart';
 import '../../model/program.dart';
 import '../../model/program_history.dart';
 import '../../model/session_history.dart';
-import '../app_repository.dart';
+import '../../data/repository/app_repository.dart';
 
 class AppRepositoryImpl implements AppRepository {
   final db = TempDataSource();

@@ -6,7 +6,7 @@ part of 'fetched_programs.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$fetchedProgramsHash() => r'32db20348270d61fc839f7118501c0f490e104b7';
+String _$fetchedProgramsHash() => r'8c3f2e70b36ae6d088ecc90b5d2748b6dcd8fc50';
 
 /// See also [FetchedPrograms].
 @ProviderFor(FetchedPrograms)
